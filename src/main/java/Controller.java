@@ -10,7 +10,7 @@ public class Controller {
         this.view = view;
     }
 
-    public void process() {
+    public boolean process() {
         boolean willGameContinue = true;
         while (willGameContinue) {
             ConsoleHelper.printMessage("Enter 1st player's name: ");
@@ -18,7 +18,7 @@ public class Controller {
             while (name.isEmpty()) {
                 name = ConsoleHelper.readMessage();
             }
-            player1 = model.createPlayer(1, name, Symbol.CROSS);
+            player1 = model.createPlayer(1, name, "X");
             name = "";
             ConsoleHelper.printMessage("Enter 2nd player's name: ");
             while (name.isEmpty()) {
@@ -28,7 +28,7 @@ public class Controller {
                     name = "";
                 }
             }
-            player2 = model.createPlayer(2, name, Symbol.ZERO);
+            player2 = model.createPlayer(2, name, "O");
             model.init();
             Player currentPlayer = player1;
             boolean isWinnerFound = false;
@@ -43,6 +43,11 @@ public class Controller {
                     isWinnerFound = true;
                     break;
                 }
+                try {
+                    XMLWriter.writeXML("gameplay2.xml");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 currentPlayer = changePlayer(currentPlayer);
             }
             if (!isWinnerFound) {
@@ -52,10 +57,11 @@ public class Controller {
             }
             Statistic.sendStatisticsToFile(Statistic.makeOutputData());
             ConsoleHelper.printMessage("Do you want to play again?", true);
-            ConsoleHelper.printMessage("If no, enter word \"exit\". For continue playing enter any symbol: ");
+            ConsoleHelper.printMessage("If no, enter \'1\'. For continue playing enter any symbol: ");
             String wantToPlay = ConsoleHelper.readMessage();
-            if (wantToPlay.equalsIgnoreCase("exit")) willGameContinue = false;
+            if (wantToPlay.equals("1")) willGameContinue = false;
         }
+        return willGameContinue;
     }
 
     public Player changePlayer(Player player) {

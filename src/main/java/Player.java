@@ -3,12 +3,12 @@ import java.util.Objects;
 public class Player {
     private int id;
     private String name;
-    private Symbol symbol;
+    private String symbol;
 
     public Player() {
     }
 
-    public Player(int id, String name, Symbol symbol) {
+    public Player(int id, String name, String symbol) {
         this.id = id;
         this.name = name;
         this.symbol = symbol;
@@ -30,11 +30,11 @@ public class Player {
         this.name = name;
     }
 
-    public Symbol getSymbol() {
+    public String getSymbol() {
         return symbol;
     }
 
-    public void setSymbol(Symbol symbol) {
+    public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
 
