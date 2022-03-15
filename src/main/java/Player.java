@@ -5,13 +5,17 @@ public class Player {
     private String name;
     private String symbol;
 
+    private boolean isWin;
+
     public Player() {
+        isWin = false;
     }
 
     public Player(int id, String name, String symbol) {
         this.id = id;
         this.name = name;
         this.symbol = symbol;
+        isWin = false;
     }
 
     public int getId() {
@@ -36,6 +40,14 @@ public class Player {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
+    }
+
+    public boolean isWin() {
+        return isWin;
+    }
+
+    public void setWin(boolean win) {
+        isWin = win;
     }
 
     @Override

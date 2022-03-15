@@ -1,15 +1,17 @@
 import javax.xml.namespace.QName;
-import javax.xml.stream.*;
-import javax.xml.stream.events.*;
-import java.io.*;
-import java.util.*;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
+import java.io.FileInputStream;
+import java.util.ArrayList;
 
 public class XMLReader {
     private static ArrayList<Step> steps = new ArrayList<>();
     private static ArrayList<Player> players = new ArrayList<>();
     private static String[][] gameField = {{"-", "-", "-"},
-                                            {"-", "-", "-"},
-                                            {"-", "-", "-"}};
+            {"-", "-", "-"},
+            {"-", "-", "-"}};
     private static String status;
 
     public static void readXML(String fileName) {
@@ -23,17 +25,14 @@ public class XMLReader {
                     if (startElement.getName().getLocalPart().equals("Player")) {
                         int attributeId = Integer.parseInt(startElement.getAttributeByName(new QName("id")).getValue());
                         String attributeName = startElement.getAttributeByName(new QName("name")).getValue();
-                        String  attributeSymbol = startElement.getAttributeByName(new QName("symbol")).getValue();
+                        String attributeSymbol = startElement.getAttributeByName(new QName("symbol")).getValue();
                         players.add(new Player(attributeId, attributeName, attributeSymbol));
                     } else if (startElement.getName().getLocalPart().equals("Step")) {
                         event = reader.nextEvent();
                         int attributeNum = Integer.parseInt(startElement.getAttributeByName(new QName("num")).getValue());
                         int attributePlId = Integer.parseInt(startElement.getAttributeByName(new QName("playerId")).getValue());
-                        int cell = Integer.parseInt(event.asCharacters().getData());
+                        int cell = getCellAddress(event.asCharacters().getData());
                         steps.add(new Step(attributeNum, attributePlId, cell));
-                    } else if (startElement.getName().getLocalPart().equals("GameResult")) {
-                        event = reader.nextEvent();
-                        status = event.asCharacters().getData();
                     }
                 }
             }
@@ -66,6 +65,9 @@ public class XMLReader {
             Player winner = players.get(2);
             System.out.printf("Player %d -> %s is winner as \'%s\'!\n", winner.getId(), winner.getName(), winner.getSymbol());
         }
+        steps = new ArrayList<>();
+        players = new ArrayList<>();
+        gameField = new String[][]{{"-", "-", "-"}, {"-", "-", "-"}, {"-", "-", "-"}};
     }
 
     public static void formatAndPrint(String gamefield[][], int pause) throws InterruptedException {
@@ -78,5 +80,22 @@ public class XMLReader {
             System.out.println(resultString);
         }
         Thread.sleep(pause);
+    }
+
+    public static Integer getCellAddress(String value) {
+        Integer cell = -1;
+        try {
+            cell = Integer.parseInt(value);
+        } catch (NumberFormatException ignored) {
+            String[] cellAdr = value.trim().split(" ");
+            if (cellAdr.length == 2) {
+                try {
+                    cell = 3 * (Integer.parseInt(cellAdr[0]) - 1) + (Integer.parseInt(cellAdr[1]));
+                } catch (Exception e) {
+                    ConsoleHelper.printMessage("Unidentified coordinate format! Use only double with space (from '1 1' to '3 3') or one digit coordinate (from 1 to 9)");
+                }
+            }
+        }
+        return cell;
     }
 }

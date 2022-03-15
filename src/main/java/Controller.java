@@ -1,6 +1,13 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class Controller {
     private final Model model;
     private final View view;
+
+    private List<Step> steps = new ArrayList<>();
 
     Player player1;
     Player player2;
@@ -13,6 +20,7 @@ public class Controller {
     public boolean process() {
         boolean willGameContinue = true;
         while (willGameContinue) {
+            int stepCounter = 0;
             ConsoleHelper.printMessage("Enter 1st player's name: ");
             String name = "";
             while (name.isEmpty()) {
@@ -34,19 +42,18 @@ public class Controller {
             boolean isWinnerFound = false;
             Integer[] tempResultArray;
             while (model.hasFreeCell(model.getGameField())) {
-                model.putSymbol(model.getGameField(), currentPlayer);
+                Step step = model.putSymbol(model.getGameField(), currentPlayer);
+                step.setNum(stepCounter);
+                steps.add(step);
+                stepCounter++;
                 view.refresh(model.getGameField());
                 if (model.isWin(model.getGameField(), currentPlayer)) {
                     ConsoleHelper.printMessage(String.format("Winner is %s!", currentPlayer.getName()), true);
+                    currentPlayer.setWin(true);
                     Statistic.setPlayerResult(currentPlayer, Result.WIN);
                     Statistic.setPlayerResult(changePlayer(currentPlayer), Result.LOSE);
                     isWinnerFound = true;
                     break;
-                }
-                try {
-                    XMLWriter.writeXML("gameplay2.xml");
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
                 currentPlayer = changePlayer(currentPlayer);
             }
@@ -54,6 +61,11 @@ public class Controller {
                 ConsoleHelper.printMessage("Drawn game!", true);
                 Statistic.setPlayerResult(currentPlayer, Result.DRAW);
                 Statistic.setPlayerResult(changePlayer(currentPlayer), Result.DRAW);
+            }
+            try {
+                XMLWriter.writeXML(List.of(player1, player2), steps, "gameplay.xml");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             Statistic.sendStatisticsToFile(Statistic.makeOutputData());
             ConsoleHelper.printMessage("Do you want to play again?", true);

@@ -1,19 +1,20 @@
 import java.util.*;
 
 public class Model {
-    private String[][] GAME_FIELD = new String[3][3];
-    private final int GAME_CELLS = GAME_FIELD.length * GAME_FIELD[0].length;
+    private String[][] game_field = new String[3][3];
+    private final int GAME_CELLS = game_field.length * game_field[0].length;
 
     public void init() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                GAME_FIELD[i][j] = "-";
+                game_field[i][j] = "-";
             }
         }
     }
 
-    public void putSymbol(String[][] gameField, Player player) {
+    public Step putSymbol(String[][] gameField, Player player) {
         int x = -1;
+        Step step = null;
         ConsoleHelper.printMessage(String.format("%dst player is moving", player.getId()), true);
         while (x < 0) {
             ConsoleHelper.printMessage(String.format("Enter the number of the cell (from 1 to %s): ", GAME_CELLS));
@@ -27,11 +28,14 @@ public class Model {
                 ConsoleHelper.printMessage("This cell doesn't exist!", true);
             }
         }
-        if (gameField[x / 3][x % 3].equals("-")) gameField[x / 3][x % 3] = player.getSymbol();
-        else {
+        if (gameField[x / 3][x % 3].equals("-")) {
+            gameField[x / 3][x % 3] = player.getSymbol();
+            step = new Step(player.getId(), x);
+        } else {
             ConsoleHelper.printMessage("This cell isn't free! Please, try again!", true);
             putSymbol(gameField, player);
         }
+        return step;
     }
 
     public boolean hasFreeCell(String[][] gameField) {
@@ -67,6 +71,6 @@ public class Model {
     }
 
     public String[][] getGameField() {
-        return GAME_FIELD;
+        return game_field;
     }
 }

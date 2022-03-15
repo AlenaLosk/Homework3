@@ -9,6 +9,12 @@ public class Step {
         this.cell = cell;
     }
 
+    public Step(int playerId, int cell) {
+        this.num = 0;
+        this.playerId = playerId;
+        this.cell = cell;
+    }
+
     public int getNum() {
         return num;
     }
