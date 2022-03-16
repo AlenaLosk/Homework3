@@ -47,6 +47,15 @@ public class XMLReader {
         int playerId;
         Step currentStep;
         int currentCell;
+        if (players.size() >= 2) {
+            System.out.println();
+            System.out.printf("Player 1 -> %s as '%s'" +
+                    System.lineSeparator(), players.get(0).getName(), players.get(0).getSymbol());
+            System.out.printf("Player 2 -> %s as '%s'" +
+                    System.lineSeparator(), players.get(1).getName(), players.get(1).getSymbol());
+        } else {
+            ConsoleHelper.printMessage("The file with game result doesn't include all players!");
+        }
         for (int i = 0; i < steps.size(); i++) {
             currentStep = steps.get(i);
             playerId = currentStep.getPlayerId();
@@ -63,7 +72,7 @@ public class XMLReader {
         }
         if (players.size() == 3) {
             Player winner = players.get(2);
-            System.out.printf("Player %d -> %s is winner as \'%s\'!\n", winner.getId(), winner.getName(), winner.getSymbol());
+            System.out.printf("Player %d -> %s is winner as '%s'!\n", winner.getId(), winner.getName(), winner.getSymbol());
         }
         steps = new ArrayList<>();
         players = new ArrayList<>();
