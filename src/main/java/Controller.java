@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Controller {
     private final Model model;
@@ -17,7 +14,7 @@ public class Controller {
         this.view = view;
     }
 
-    public boolean process() {
+    public void process(XMLWriter writer, String writingFile) {
         boolean willGameContinue = true;
         while (willGameContinue) {
             int stepCounter = 1;
@@ -63,7 +60,7 @@ public class Controller {
                 Statistic.setPlayerResult(changePlayer(currentPlayer), Result.DRAW);
             }
             try {
-                XMLWriter.writeXML(List.of(player1, player2), steps, "gameplay.xml");
+                new Writer(writer).write(List.of(player1, player2), steps, writingFile);
                 steps.clear();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -74,7 +71,6 @@ public class Controller {
             String wantToPlay = ConsoleHelper.readMessage();
             if (wantToPlay.equals("1")) willGameContinue = false;
         }
-        return willGameContinue;
     }
 
     public Player changePlayer(Player player) {

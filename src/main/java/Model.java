@@ -33,7 +33,7 @@ public class Model {
             step = new Step(player.getId(), x);
         } else {
             ConsoleHelper.printMessage("This cell isn't free! Please, try again!", true);
-            putSymbol(gameField, player);
+            step = putSymbol(gameField, player);
         }
         return step;
     }

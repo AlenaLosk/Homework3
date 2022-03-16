@@ -7,17 +7,17 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 public class XMLReader {
-    private static ArrayList<Step> steps = new ArrayList<>();
-    private static ArrayList<Player> players = new ArrayList<>();
-    private static String[][] gameField = {{"-", "-", "-"},
+    private ArrayList<Step> steps = new ArrayList<>();
+    private ArrayList<Player> players = new ArrayList<>();
+    private String[][] gameField = {{"-", "-", "-"},
             {"-", "-", "-"},
             {"-", "-", "-"}};
     private static String status;
 
-    public static void readXML(String fileName) {
+    public void readXML(String readingFile) {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            XMLEventReader reader = factory.createXMLEventReader(new FileInputStream(fileName));
+            XMLEventReader reader = factory.createXMLEventReader(new FileInputStream(readingFile));
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
                 if (event.isStartElement()) {
@@ -41,8 +41,8 @@ public class XMLReader {
         }
     }
 
-    public static void playXMLGame() throws InterruptedException {
-        readXML("gameplay.xml");
+    public void playXMLGame(String readingFile) {
+        readXML(readingFile);
         String symbol = "-";
         int playerId;
         Step currentStep;
@@ -74,12 +74,9 @@ public class XMLReader {
             Player winner = players.get(2);
             System.out.printf("Player %d -> %s is winner as '%s'!\n", winner.getId(), winner.getName(), winner.getSymbol());
         }
-        steps = new ArrayList<>();
-        players = new ArrayList<>();
-        gameField = new String[][]{{"-", "-", "-"}, {"-", "-", "-"}, {"-", "-", "-"}};
     }
 
-    public static void formatAndPrint(String gamefield[][], int pause) throws InterruptedException {
+    public void formatAndPrint(String gamefield[][], int pause) {
         StringBuilder resultString;
         for (int i = 0; i < 3; i++) {
             resultString = new StringBuilder("|");
@@ -88,10 +85,14 @@ public class XMLReader {
             }
             System.out.println(resultString);
         }
-        Thread.sleep(pause);
+        try {
+            Thread.sleep(pause);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static Integer getCellAddress(String value) {
+    public Integer getCellAddress(String value) {
         Integer cell = -1;
         try {
             cell = Integer.parseInt(value);

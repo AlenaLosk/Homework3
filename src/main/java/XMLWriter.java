@@ -8,7 +8,7 @@ import java.util.List;
 
 public class XMLWriter {
 
-    public static void writeXML(List<Player> players, List<Step> steps, String fileName) {
+    public void writeXML(List<Player> players, List<Step> steps, String fileName) {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         try {
             XMLEventWriter writer = factory.createXMLEventWriter(new FileOutputStream(fileName), "windows-1251");
@@ -61,7 +61,7 @@ public class XMLWriter {
         }
     }
 
-    private static void writeStep(XMLEventWriter eventWriter, Step step) throws XMLStreamException {
+    private void writeStep(XMLEventWriter eventWriter, Step step) throws XMLStreamException {
         XMLEventFactory eventFactory = XMLEventFactory.newInstance();
         XMLEvent end = eventFactory.createDTD("\n");
         eventWriter.add(eventFactory.createStartElement("", "", "Step"));
@@ -72,7 +72,7 @@ public class XMLWriter {
         eventWriter.add(end);
     }
 
-    private static void writePlayer(XMLEventWriter eventWriter, Player player) throws XMLStreamException {
+    private void writePlayer(XMLEventWriter eventWriter, Player player) throws XMLStreamException {
         XMLEventFactory eventFactory = XMLEventFactory.newInstance();
         XMLEvent end = eventFactory.createDTD("\n");
         eventWriter.add(eventFactory.createStartElement("", "", "Player"));
