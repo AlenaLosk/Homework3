@@ -37,7 +37,7 @@ public class XMLReader {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ConsoleHelper.printMessage("The file with game steps wasn't found!" + System.lineSeparator(), true);
         }
     }
 

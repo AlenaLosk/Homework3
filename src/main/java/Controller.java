@@ -20,7 +20,7 @@ public class Controller {
     public boolean process() {
         boolean willGameContinue = true;
         while (willGameContinue) {
-            int stepCounter = 0;
+            int stepCounter = 1;
             ConsoleHelper.printMessage("Enter 1st player's name: ");
             String name = "";
             while (name.isEmpty()) {
@@ -64,6 +64,7 @@ public class Controller {
             }
             try {
                 XMLWriter.writeXML(List.of(player1, player2), steps, "gameplay.xml");
+                steps.clear();
             } catch (Exception e) {
                 e.printStackTrace();
             }

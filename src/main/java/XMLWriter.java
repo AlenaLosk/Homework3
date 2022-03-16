@@ -2,7 +2,7 @@ import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.*;
+import javax.xml.stream.events.XMLEvent;
 import java.io.FileOutputStream;
 import java.util.List;
 
@@ -17,31 +17,31 @@ public class XMLWriter {
             XMLEvent tab = eventFactory.createDTD("\t");
             writer.add(eventFactory.createStartDocument("windows-1251", "1.0"));
             writer.add(end);
-            writer.add(eventFactory.createStartElement("","", "Gameplay"));
+            writer.add(eventFactory.createStartElement("", "", "Gameplay"));
             writer.add(end);
-            for (Player player: players) {
+            for (Player player : players) {
                 writer.add(tab);
                 writePlayer(writer, player);
             }
             writer.add(tab);
-            writer.add(eventFactory.createStartElement("","", "Game"));
+            writer.add(eventFactory.createStartElement("", "", "Game"));
             writer.add(end);
-            for (Step step: steps) {
+            for (Step step : steps) {
                 writer.add(tab);
                 writer.add(tab);
                 writeStep(writer, step);
             }
             writer.add(tab);
-            writer.add(eventFactory.createEndElement("","", "Game"));
+            writer.add(eventFactory.createEndElement("", "", "Game"));
             writer.add(end);
 
             Player win = null;
-            for (Player player: players) {
+            for (Player player : players) {
                 if (player.isWin()) {
                     win = player;
                 }
             }
-            if (!win.equals(null)) {
+            if (win != null) {
                 writer.add(tab);
                 writer.add(eventFactory.createStartElement("", "", "GameResult"));
                 writer.add(eventFactory.createStartElement("", "", "Player"));
@@ -52,12 +52,12 @@ public class XMLWriter {
                 writer.add(eventFactory.createEndElement("", "", "GameResult"));
                 writer.add(end);
             }
-            writer.add(eventFactory.createEndElement("","", "Gameplay"));
+            writer.add(eventFactory.createEndElement("", "", "Gameplay"));
             writer.add(end);
             writer.add(eventFactory.createEndDocument());
             writer.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            ConsoleHelper.printMessage("The file for writing game steps wasn't found!" + System.lineSeparator(), true);
         }
     }
 
@@ -77,8 +77,8 @@ public class XMLWriter {
         XMLEvent end = eventFactory.createDTD("\n");
         eventWriter.add(eventFactory.createStartElement("", "", "Player"));
         eventWriter.add(eventFactory.createAttribute("id", String.valueOf(player.getId())));
-        eventWriter.add(eventFactory.createAttribute("name",  player.getName()));
-        eventWriter.add(eventFactory.createAttribute("symbol",String.valueOf(player.getSymbol())));
+        eventWriter.add(eventFactory.createAttribute("name", player.getName()));
+        eventWriter.add(eventFactory.createAttribute("symbol", String.valueOf(player.getSymbol())));
         eventWriter.add(eventFactory.createEndElement("", "", "Player"));
         eventWriter.add(end);
     }
