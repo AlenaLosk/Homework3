@@ -22,6 +22,7 @@ public class XMLWriter {
             for (Player player : players) {
                 writer.add(tab);
                 writePlayer(writer, player);
+                writer.add(end);
             }
             writer.add(tab);
             writer.add(eventFactory.createStartElement("", "", "Game"));
@@ -30,28 +31,14 @@ public class XMLWriter {
                 writer.add(tab);
                 writer.add(tab);
                 writeStep(writer, step);
+                writer.add(end);
             }
             writer.add(tab);
             writer.add(eventFactory.createEndElement("", "", "Game"));
             writer.add(end);
-
-            Player win = null;
-            for (Player player : players) {
-                if (player.isWin()) {
-                    win = player;
-                }
-            }
-            if (win != null) {
-                writer.add(tab);
-                writer.add(eventFactory.createStartElement("", "", "GameResult"));
-                writer.add(eventFactory.createStartElement("", "", "Player"));
-                writer.add(eventFactory.createAttribute("id", String.valueOf(win.getId())));
-                writer.add(eventFactory.createAttribute("name", win.getName()));
-                writer.add(eventFactory.createAttribute("symbol", String.valueOf(win.getSymbol())));
-                writer.add(eventFactory.createEndElement("", "", "Player"));
-                writer.add(eventFactory.createEndElement("", "", "GameResult"));
-                writer.add(end);
-            }
+            writer.add(tab);
+            writeGameResult(writer, players);
+            writer.add(end);
             writer.add(eventFactory.createEndElement("", "", "Gameplay"));
             writer.add(end);
             writer.add(eventFactory.createEndDocument());
@@ -63,23 +50,41 @@ public class XMLWriter {
 
     private void writeStep(XMLEventWriter eventWriter, Step step) throws XMLStreamException {
         XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-        XMLEvent end = eventFactory.createDTD("\n");
         eventWriter.add(eventFactory.createStartElement("", "", "Step"));
         eventWriter.add(eventFactory.createAttribute("num", String.valueOf(step.getNum())));
         eventWriter.add(eventFactory.createAttribute("playerId", String.valueOf(step.getPlayerId())));
         eventWriter.add(eventFactory.createCharacters(String.valueOf(step.getCell() + 1)));
         eventWriter.add(eventFactory.createEndElement("", "", "Step"));
-        eventWriter.add(end);
     }
 
     private void writePlayer(XMLEventWriter eventWriter, Player player) throws XMLStreamException {
         XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-        XMLEvent end = eventFactory.createDTD("\n");
         eventWriter.add(eventFactory.createStartElement("", "", "Player"));
         eventWriter.add(eventFactory.createAttribute("id", String.valueOf(player.getId())));
         eventWriter.add(eventFactory.createAttribute("name", player.getName()));
         eventWriter.add(eventFactory.createAttribute("symbol", String.valueOf(player.getSymbol())));
         eventWriter.add(eventFactory.createEndElement("", "", "Player"));
-        eventWriter.add(end);
     }
+
+    private void writeGameResult(XMLEventWriter eventWriter, List<Player> players) throws XMLStreamException {
+        XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+        Player win = null;
+        for (Player player : players) {
+            if (player.isWin()) {
+                win = player;
+            }
+        }
+        eventWriter.add(eventFactory.createStartElement("", "", "GameResult"));
+        if (win != null) {
+            eventWriter.add(eventFactory.createStartElement("", "", "Player"));
+            eventWriter.add(eventFactory.createAttribute("id", String.valueOf(win.getId())));
+            eventWriter.add(eventFactory.createAttribute("name", win.getName()));
+            eventWriter.add(eventFactory.createAttribute("symbol", String.valueOf(win.getSymbol())));
+            eventWriter.add(eventFactory.createEndElement("", "", "Player"));
+        } else {
+            eventWriter.add(eventFactory.createCharacters("Draw!"));
+        }
+        eventWriter.add(eventFactory.createEndElement("", "", "GameResult"));
+    }
+
 }

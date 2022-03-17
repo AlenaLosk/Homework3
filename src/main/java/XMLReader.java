@@ -5,6 +5,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class XMLReader {
     private ArrayList<Step> steps = new ArrayList<>();
@@ -12,7 +13,7 @@ public class XMLReader {
     private String[][] gameField = {{"-", "-", "-"},
             {"-", "-", "-"},
             {"-", "-", "-"}};
-    private static String status;
+    private String status = "";
 
     public void readXML(String readingFile) {
         XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -28,11 +29,22 @@ public class XMLReader {
                         String attributeSymbol = startElement.getAttributeByName(new QName("symbol")).getValue();
                         players.add(new Player(attributeId, attributeName, attributeSymbol));
                     } else if (startElement.getName().getLocalPart().equals("Step")) {
-                        event = reader.nextEvent();
                         int attributeNum = Integer.parseInt(startElement.getAttributeByName(new QName("num")).getValue());
                         int attributePlId = Integer.parseInt(startElement.getAttributeByName(new QName("playerId")).getValue());
+                        event = reader.nextEvent();
                         int cell = getCellAddress(event.asCharacters().getData());
                         steps.add(new Step(attributeNum, attributePlId, cell));
+                    } else if (startElement.getName().getLocalPart().equals("GameResult")) {
+                        event = reader.nextEvent();
+                        if (!event.isStartElement()) {
+                            status = event.asCharacters().getData();
+                        } else {
+                            startElement = event.asStartElement();
+                            int attributeId = Integer.parseInt(startElement.getAttributeByName(new QName("id")).getValue());
+                            String attributeName = startElement.getAttributeByName(new QName("name")).getValue();
+                            String attributeSymbol = startElement.getAttributeByName(new QName("symbol")).getValue();
+                            players.add(new Player(attributeId, attributeName, attributeSymbol));
+                        }
                     }
                 }
             }
@@ -73,6 +85,8 @@ public class XMLReader {
         if (players.size() == 3) {
             Player winner = players.get(2);
             System.out.printf("Player %d -> %s is winner as '%s'!\n", winner.getId(), winner.getName(), winner.getSymbol());
+        } else if (players.size() == 2) {
+            System.out.println(status);
         }
     }
 
