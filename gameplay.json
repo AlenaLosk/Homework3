@@ -2,11 +2,11 @@
   "Gameplay" : {
     "Player" : [ {
       "_id" : 1,
-      "_name" : "Олег",
+      "_name" : "Лена",
       "_symbol" : "X"
     }, {
       "_id" : 2,
-      "_name" : "Рита",
+      "_name" : "Игорь",
       "_symbol" : "O"
     } ],
     "Game" : {
@@ -17,39 +17,27 @@
       }, {
         "_num" : 2,
         "_playerId" : 2,
-        "_text" : 2
+        "_text" : 9
       }, {
         "_num" : 3,
         "_playerId" : 1,
-        "_text" : 3
+        "_text" : 2
       }, {
         "_num" : 4,
         "_playerId" : 2,
-        "_text" : 5
+        "_text" : 8
       }, {
         "_num" : 5,
         "_playerId" : 1,
-        "_text" : 4
-      }, {
-        "_num" : 6,
-        "_playerId" : 2,
-        "_text" : 9
-      }, {
-        "_num" : 7,
-        "_playerId" : 1,
-        "_text" : 6
-      }, {
-        "_num" : 8,
-        "_playerId" : 2,
-        "_text" : 7
-      }, {
-        "_num" : 9,
-        "_playerId" : 1,
-        "_text" : 8
+        "_text" : 3
       } ]
     },
     "GameResult" : {
-      "Player" : null
+      "Player" : {
+        "_id" : 1,
+        "_name" : "Лена",
+        "_symbol" : "X"
+      }
     }
   }
 }

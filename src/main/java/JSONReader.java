@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -15,9 +16,10 @@ public class JSONReader implements Reader {
 
     private Game read(String file) {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Game result = null;
-        try {
-            result = mapper.readValue(new File(file), Game.class);
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            result = mapper.readValue(fileInputStream, Game.class);
         } catch (Exception e) {
             ConsoleHelper.printMessage("The file with game steps wasn't found!" + System.lineSeparator(), true);
         }

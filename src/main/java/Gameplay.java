@@ -1,11 +1,14 @@
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 
-@JsonIgnoreProperties({"model", "view"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Gameplay {
+    @JsonIgnore
     private final Model model;
+    @JsonIgnore
     private final View view;
     @JsonProperty("Player")
     private Player[] players;

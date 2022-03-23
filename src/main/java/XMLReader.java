@@ -4,6 +4,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +18,8 @@ public class XMLReader implements Reader {
 
     private void read(String file) {
         XMLInputFactory factory = XMLInputFactory.newInstance();
-        try {
-            XMLEventReader reader = factory.createXMLEventReader(new FileInputStream(file));
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            XMLEventReader reader = factory.createXMLEventReader(inputStream);
             int counter = 0;
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();

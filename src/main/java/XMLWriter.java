@@ -7,11 +7,11 @@ import java.io.FileOutputStream;
 
 public class XMLWriter implements Writer {
     @Override
-    public void write(Game game, String fileName) {
+    public void write(Game game, String file) {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         Gameplay gameplay = game.getGameplay();
-        try {
-            XMLEventWriter writer = factory.createXMLEventWriter(new FileOutputStream(fileName), "windows-1251");
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            XMLEventWriter writer = factory.createXMLEventWriter(outputStream, "windows-1251");
             XMLEventFactory eventFactory = XMLEventFactory.newInstance();
             XMLEvent end = eventFactory.createDTD("\n");
             XMLEvent tab = eventFactory.createDTD("\t");
