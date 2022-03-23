@@ -4,12 +4,12 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.FileOutputStream;
-import java.util.List;
 
-public class XMLWriter {
-
-    public void writeXML(List<Player> players, List<Step> steps, String fileName) {
+public class XMLWriter implements Writer {
+    @Override
+    public void write(Game game, String fileName) {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        Gameplay gameplay = game.getGameplay();
         try {
             XMLEventWriter writer = factory.createXMLEventWriter(new FileOutputStream(fileName), "windows-1251");
             XMLEventFactory eventFactory = XMLEventFactory.newInstance();
@@ -19,7 +19,7 @@ public class XMLWriter {
             writer.add(end);
             writer.add(eventFactory.createStartElement("", "", "Gameplay"));
             writer.add(end);
-            for (Player player : players) {
+            for (Player player : gameplay.getPlayers()) {
                 writer.add(tab);
                 writePlayer(writer, player);
                 writer.add(end);
@@ -27,7 +27,7 @@ public class XMLWriter {
             writer.add(tab);
             writer.add(eventFactory.createStartElement("", "", "Game"));
             writer.add(end);
-            for (Step step : steps) {
+            for (Step step : gameplay.getSteps().getSteps()) {
                 writer.add(tab);
                 writer.add(tab);
                 writeStep(writer, step);
@@ -37,7 +37,7 @@ public class XMLWriter {
             writer.add(eventFactory.createEndElement("", "", "Game"));
             writer.add(end);
             writer.add(tab);
-            writeGameResult(writer, players);
+            writeGameResult(writer, gameplay.getResult().getWinner());
             writer.add(end);
             writer.add(eventFactory.createEndElement("", "", "Gameplay"));
             writer.add(end);
@@ -53,7 +53,7 @@ public class XMLWriter {
         eventWriter.add(eventFactory.createStartElement("", "", "Step"));
         eventWriter.add(eventFactory.createAttribute("num", String.valueOf(step.getNum())));
         eventWriter.add(eventFactory.createAttribute("playerId", String.valueOf(step.getPlayerId())));
-        eventWriter.add(eventFactory.createCharacters(String.valueOf(step.getCell() + 1)));
+        eventWriter.add(eventFactory.createCharacters(String.valueOf(step.getCell())));
         eventWriter.add(eventFactory.createEndElement("", "", "Step"));
     }
 
@@ -66,20 +66,14 @@ public class XMLWriter {
         eventWriter.add(eventFactory.createEndElement("", "", "Player"));
     }
 
-    private void writeGameResult(XMLEventWriter eventWriter, List<Player> players) throws XMLStreamException {
+    private void writeGameResult(XMLEventWriter eventWriter, Player winner) throws XMLStreamException {
         XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-        Player win = null;
-        for (Player player : players) {
-            if (player.isWin()) {
-                win = player;
-            }
-        }
         eventWriter.add(eventFactory.createStartElement("", "", "GameResult"));
-        if (win != null) {
+        if (winner != null) {
             eventWriter.add(eventFactory.createStartElement("", "", "Player"));
-            eventWriter.add(eventFactory.createAttribute("id", String.valueOf(win.getId())));
-            eventWriter.add(eventFactory.createAttribute("name", win.getName()));
-            eventWriter.add(eventFactory.createAttribute("symbol", String.valueOf(win.getSymbol())));
+            eventWriter.add(eventFactory.createAttribute("id", String.valueOf(winner.getId())));
+            eventWriter.add(eventFactory.createAttribute("name", winner.getName()));
+            eventWriter.add(eventFactory.createAttribute("symbol", String.valueOf(winner.getSymbol())));
             eventWriter.add(eventFactory.createEndElement("", "", "Player"));
         } else {
             eventWriter.add(eventFactory.createCharacters("Draw!"));

@@ -5,20 +5,21 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
+import java.util.List;
 
-public class XMLReader {
-    private ArrayList<Step> steps = new ArrayList<>();
-    private ArrayList<Player> players = new ArrayList<>();
+public class XMLReader implements Reader {
+    private List<Step> steps = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
     private String[][] gameField = {{"-", "-", "-"},
             {"-", "-", "-"},
             {"-", "-", "-"}};
-    private String status = "";
+    private String status = "Draw!";
 
-    public void readXML(String readingFile) {
+    private void read(String file) {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            XMLEventReader reader = factory.createXMLEventReader(new FileInputStream(readingFile));
+            XMLEventReader reader = factory.createXMLEventReader(new FileInputStream(file));
+            int counter = 0;
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
                 if (event.isStartElement()) {
@@ -53,8 +54,9 @@ public class XMLReader {
         }
     }
 
-    public void playXMLGame(String readingFile) {
-        readXML(readingFile);
+    @Override
+    public void readAndPlay(String file) {
+        read(file);
         String symbol = "-";
         int playerId;
         Step currentStep;
@@ -79,7 +81,7 @@ public class XMLReader {
             }
             currentCell = (currentStep.getCell() - 1);
             gameField[currentCell / 3][currentCell % 3] = symbol;
-            formatAndPrint(gameField, 800);
+            formatAndPrint(800);
             System.out.println();
         }
         if (players.size() == 3) {
@@ -90,12 +92,12 @@ public class XMLReader {
         }
     }
 
-    public void formatAndPrint(String gamefield[][], int pause) {
+    private void formatAndPrint(int pause) {
         StringBuilder resultString;
         for (int i = 0; i < 3; i++) {
             resultString = new StringBuilder("|");
             for (int j = 0; j < 3; j++) {
-                resultString.append(gamefield[i][j] + "|");
+                resultString.append(gameField[i][j] + "|");
             }
             System.out.println(resultString);
         }

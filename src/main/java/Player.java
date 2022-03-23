@@ -1,21 +1,21 @@
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.*;
 
 public class Player {
+    @JsonProperty("_id")
     private int id;
+    @JsonProperty("_name")
     private String name;
+    @JsonProperty("_symbol")
     private String symbol;
 
-    private boolean isWin;
-
     public Player() {
-        isWin = false;
     }
-
     public Player(int id, String name, String symbol) {
         this.id = id;
         this.name = name;
         this.symbol = symbol;
-        isWin = false;
     }
 
     public int getId() {
@@ -40,14 +40,6 @@ public class Player {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
-    }
-
-    public boolean isWin() {
-        return isWin;
-    }
-
-    public void setWin(boolean win) {
-        isWin = win;
     }
 
     @Override

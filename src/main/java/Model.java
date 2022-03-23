@@ -1,20 +1,18 @@
-import java.util.*;
-
 public class Model {
-    private String[][] game_field = new String[3][3];
-    private final int GAME_CELLS = game_field.length * game_field[0].length;
+    private String[][] gameField = new String[3][3];
+    private final int GAME_CELLS = gameField.length * gameField[0].length;
 
     public void init() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                game_field[i][j] = "-";
+                gameField[i][j] = "-";
             }
         }
     }
 
-    public Step putSymbol(String[][] gameField, Player player) {
+    public Step putSymbol(Player player) {
         int x = -1;
-        Step step = null;
+        Step step;
         ConsoleHelper.printMessage(String.format("%dst player is moving", player.getId()), true);
         while (x < 0) {
             ConsoleHelper.printMessage(String.format("Enter the number of the cell (from 1 to %s): ", GAME_CELLS));
@@ -30,10 +28,10 @@ public class Model {
         }
         if (gameField[x / 3][x % 3].equals("-")) {
             gameField[x / 3][x % 3] = player.getSymbol();
-            step = new Step(player.getId(), x);
+            step = new Step(player.getId(), x + 1);
         } else {
             ConsoleHelper.printMessage("This cell isn't free! Please, try again!", true);
-            step = putSymbol(gameField, player);
+            step = putSymbol(player);
         }
         return step;
     }
@@ -47,7 +45,7 @@ public class Model {
         return false;
     }
 
-    public boolean isWin(String[][] gameField, Player player) {
+    public boolean isWin(Player player) {
         String symbol = player.getSymbol();
         for (int i = 0; i < 3; i++) {
             if ((gameField[i][0].equals(symbol) && gameField[i][1].equals(symbol) && gameField[i][2].equals(symbol)) ||
@@ -62,15 +60,10 @@ public class Model {
     }
 
     public Player createPlayer(int id, String name, String symbol) {
-        Player player = new Player(id, name, symbol);
-        HashMap<Player, Integer[]> gameStatistic = Statistic.getGameStatistic();
-        if (gameStatistic.isEmpty() || !gameStatistic.containsKey(player)) {
-            gameStatistic.put(player, new Integer[]{0, 0, 0});
-        }
-        return player;
+        return new Player(id, name, symbol);
     }
 
     public String[][] getGameField() {
-        return game_field;
+        return gameField;
     }
 }

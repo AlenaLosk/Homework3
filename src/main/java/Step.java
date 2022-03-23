@@ -1,8 +1,15 @@
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Step {
+    @JsonProperty("_num")
     private int num;
+    @JsonProperty("_playerId")
     private int playerId;
+    @JsonProperty("_text")
     private int cell;
 
+    public Step() {
+    }
     public Step(int num, int playerId, int cell) {
         this.num = num;
         this.playerId = playerId;
