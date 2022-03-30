@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -12,5 +13,20 @@ public class JSONWriter implements Writer {
         } catch (Exception e) {
             ConsoleHelper.printMessage("The file for writing game steps wasn't found!" + System.lineSeparator(), true);
         }
+    }
+
+    public String write(Step step) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(step);
+    }
+
+    public String write(Player player) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(player);
+    }
+
+    public String write(Player[] players) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(players);
     }
 }

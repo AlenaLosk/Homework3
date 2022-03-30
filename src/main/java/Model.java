@@ -1,37 +1,61 @@
-public class Model {
-    private String[][] gameField = new String[3][3];
-    private final int GAME_CELLS = gameField.length * gameField[0].length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    public void init() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                gameField[i][j] = "-";
-            }
-        }
+import java.util.Arrays;
+
+public class Model {
+    private static Logger logger = LoggerFactory.getLogger(Model.class);
+    private String[][] gameField = new String[3][3];
+    private final int GAME_CELLS = 9;
+
+    public Model() {
+        gameField = Arrays.stream(gameField).map(s -> Arrays.stream(s).map(e -> "-").toArray(String[]::new)).toArray(String[][]::new);
     }
 
-    public Step putSymbol(Player player) {
-        int x = -1;
-        Step step;
-        ConsoleHelper.printMessage(String.format("%dst player is moving", player.getId()), true);
-        while (x < 0) {
-            ConsoleHelper.printMessage(String.format("Enter the number of the cell (from 1 to %s): ", GAME_CELLS));
-            try {
-                x = Integer.parseInt(ConsoleHelper.readMessage()) - 1;
-                if (x < 0 || x > 8) {
-                    throw new NumberFormatException();
+    public Step putSymbol(Player player, boolean isConsoleMode) {
+        Step step = null;
+        if (isConsoleMode) {
+            int x = -1;
+            ConsoleHelper.printMessage(String.format("%dst player is moving", player.getId()), true);
+            while (x < 0) {
+                ConsoleHelper.printMessage(String.format("Enter the number of the cell (from 1 to %s): ", GAME_CELLS));
+                try {
+                    x = Integer.parseInt(ConsoleHelper.readMessage()) - 1;
+                    if (x < 0 || x > 8) {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException ex) {
+                    x = -1;
+                    ConsoleHelper.printMessage("This cell doesn't exist!", true);
                 }
-            } catch (NumberFormatException ex) {
-                x = -1;
-                ConsoleHelper.printMessage("This cell doesn't exist!", true);
+            }
+            if (gameField[x / 3][x % 3].equals("-")) {
+                gameField[x / 3][x % 3] = player.getSymbol();
+                step = new Step(player.getId(), x + 1);
+            } else {
+                ConsoleHelper.printMessage("This cell isn't free! Please, try again!", true);
+                step = putSymbol(player, isConsoleMode);
             }
         }
-        if (gameField[x / 3][x % 3].equals("-")) {
-            gameField[x / 3][x % 3] = player.getSymbol();
-            step = new Step(player.getId(), x + 1);
-        } else {
-            ConsoleHelper.printMessage("This cell isn't free! Please, try again!", true);
-            step = putSymbol(player);
+        return step;
+    }
+
+    public Step putSymbol(Player player, int cell) throws Exception {
+        int x = 0;
+        Step step = null;
+        try {
+            x = cell - 1;
+            if (x < 0 || x > 8) {
+                throw new NumberFormatException();
+            }
+            if (gameField[x / 3][x % 3].equals("-")) {
+                gameField[x / 3][x % 3] = player.getSymbol();
+                step = new Step(player.getId(), x + 1);
+            } else {
+                throw new Exception("This cell isn't free! Please, try again!");
+            }
+        } catch (NumberFormatException ex) {
+            throw new Exception("This cell doesn't exist!");
         }
         return step;
     }
@@ -53,14 +77,12 @@ public class Model {
                 return true;
             }
 
-            if (gameField[0][0].equals(symbol) && gameField[1][1].equals(symbol) && gameField[2][2].equals(symbol)) return true;
-            if (gameField[0][2].equals(symbol) && gameField[1][1].equals(symbol) && gameField[2][0].equals(symbol)) return true;
+            if (gameField[0][0].equals(symbol) && gameField[1][1].equals(symbol) && gameField[2][2].equals(symbol))
+                return true;
+            if (gameField[0][2].equals(symbol) && gameField[1][1].equals(symbol) && gameField[2][0].equals(symbol))
+                return true;
         }
         return false;
-    }
-
-    public Player createPlayer(int id, String name, String symbol) {
-        return new Player(id, name, symbol);
     }
 
     public String[][] getGameField() {

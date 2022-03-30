@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,6 +25,18 @@ public class JSONReader implements Reader {
             ConsoleHelper.printMessage("The file with game steps wasn't found!" + System.lineSeparator(), true);
         }
         return result;
+    }
+
+    public String gameToJson(String file) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Game game = read(file);
+        return mapper.writeValueAsString(game);
+    }
+
+    public String winnerToJson(String file) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Game game = read(file);
+        return mapper.writeValueAsString(game.getGameplay().getResult().getWinner());
     }
 
     @Override
@@ -57,7 +70,7 @@ public class JSONReader implements Reader {
                 }
                 currentCell = (currentStep.getCell() - 1);
                 gameField[currentCell / 3][currentCell % 3] = symbol;
-                formatAndPrint(800);
+                formatAndPrint(800, gameField);
                 System.out.println();
             }
             Player winner = players.get(2);
@@ -66,22 +79,6 @@ public class JSONReader implements Reader {
             } else {
                 System.out.println(status);
             }
-        }
-    }
-
-    private void formatAndPrint(int pause) {
-        StringBuilder resultString;
-        for (int i = 0; i < 3; i++) {
-            resultString = new StringBuilder("|");
-            for (int j = 0; j < 3; j++) {
-                resultString.append(gameField[i][j] + "|");
-            }
-            System.out.println(resultString);
-        }
-        try {
-            Thread.sleep(pause);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }

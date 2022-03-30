@@ -1,15 +1,16 @@
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Gameplay {
     @JsonIgnore
-    private final Model model;
-    @JsonIgnore
-    private final View view;
+    private Model model;
     @JsonProperty("Player")
     private Player[] players;
 
@@ -17,20 +18,34 @@ public class Gameplay {
     private Steps steps;
     @JsonProperty("GameResult")
     private GameResult result;
+    @JsonIgnore
+    private int stepCounter;
+    @JsonIgnore
+    private static Logger log = LoggerFactory.getLogger(Gameplay.class);
+    @JsonIgnore
+    private Player currentPlayer;
 
     public Gameplay() {
-        this.model = new Model();
-        this.view = new View();
-        steps = null;
-        result = null;
+        steps = new Steps(new ArrayList<Step>());
+        result = new GameResult();
+        stepCounter = 1;
     }
 
     public Player[] getPlayers() {
         return players;
     }
 
+    public void setPlayers(Player[] players) {
+        this.players = players;
+        setCurrentPlayer(players[0]);
+    }
+
     public Steps getSteps() {
         return steps;
+    }
+
+    public void setSteps(Steps steps) {
+        this.steps = steps;
     }
 
     public GameResult getResult() {
@@ -41,48 +56,50 @@ public class Gameplay {
         this.result = result;
     }
 
-    public void process() {
-        steps = new Steps(new ArrayList<Step>());
-        result = new GameResult();
-        int stepCounter = 1;
-        if (players == null) {
-            players = new Player[2];
-            ConsoleHelper.printMessage("Enter 1st player's name: ");
-            String name = "";
-            while (name.isEmpty()) {
-                name = ConsoleHelper.readMessage();
-            }
-            players[0] = model.createPlayer(1, name, "X");
-            name = "";
-            ConsoleHelper.printMessage("Enter 2nd player's name: ");
-            while (name.isEmpty()) {
-                name = ConsoleHelper.readMessage();
-                if (name.equals(players[0].getName())) {
-                    ConsoleHelper.printMessage("Don't repeat 1st player's name and enter 2nd player's name again: ");
-                    name = "";
-                }
-            }
-            players[1] = model.createPlayer(2, name, "O");
-        }
+    public void setModel(Model model) {
+        this.model = model;
+    }
 
-        model.init();
-        Player currentPlayer = players[0];
+    public Player process(Player[] players, boolean isConsoleMode) {
+        setPlayers(players);
+        this.model = new Model();
+        steps = new Steps(new ArrayList<Step>());
         while (model.hasFreeCell(model.getGameField())) {
-            Step step = model.putSymbol(currentPlayer);
+            Step step = model.putSymbol(currentPlayer, isConsoleMode);
             step.setNum(stepCounter++);
             steps.getSteps().add(step);
-            view.refresh(model.getGameField());
+            View.refresh(model.getGameField());
             if (model.isWin(currentPlayer)) {
                 result.setWinner(currentPlayer);
                 break;
             }
             currentPlayer = changePlayer(currentPlayer);
         }
-        if (result.getWinner() == null) {
-            ConsoleHelper.printMessage("Drawn game!", true);
-        } else {
-            ConsoleHelper.printMessage(String.format("Winner is %s!", result.getWinner().getName()), true);
+        return result.getWinner();
+    }
+
+    public Player process(Player player, int cell) throws Exception {
+        if (model == null) {
+            model = new Model();
         }
+        if (model.hasFreeCell(model.getGameField())) {
+            if (this.currentPlayer.equals(player)) {
+                Step step = model.putSymbol(currentPlayer, cell);
+                if (step != null) {
+                    step.setNum(stepCounter++);
+                    steps.getSteps().add(step);
+                    if (model.isWin(currentPlayer)) {
+                        result.setWinner(currentPlayer);
+                    }
+                    currentPlayer = changePlayer(currentPlayer);
+                }
+            } else {
+                throw new Exception("This is a step for another player!");
+            }
+        } else {
+            throw new Exception("There is no free cell!");
+        }
+        return result.getWinner();
     }
 
     public Player changePlayer(Player player) {
@@ -91,5 +108,9 @@ public class Gameplay {
         } else {
             return players[0];
         }
+    }
+
+    public void setCurrentPlayer(Player player) {
+        this.currentPlayer = player;
     }
 }

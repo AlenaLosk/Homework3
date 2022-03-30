@@ -12,4 +12,8 @@ public class Game {
     public Gameplay getGameplay() {
         return gameplay;
     }
+
+    public void setGameplay(Gameplay gameplay) {
+        this.gameplay = gameplay;
+    }
 }

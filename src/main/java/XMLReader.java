@@ -82,7 +82,7 @@ public class XMLReader implements Reader {
             }
             currentCell = (currentStep.getCell() - 1);
             gameField[currentCell / 3][currentCell % 3] = symbol;
-            formatAndPrint(800);
+            formatAndPrint(800, gameField);
             System.out.println();
         }
         if (players.size() == 3) {
@@ -90,22 +90,6 @@ public class XMLReader implements Reader {
             System.out.printf("Player %d -> %s is winner as '%s'!\n", winner.getId(), winner.getName(), winner.getSymbol());
         } else if (players.size() == 2) {
             System.out.println(status);
-        }
-    }
-
-    private void formatAndPrint(int pause) {
-        StringBuilder resultString;
-        for (int i = 0; i < 3; i++) {
-            resultString = new StringBuilder("|");
-            for (int j = 0; j < 3; j++) {
-                resultString.append(gameField[i][j] + "|");
-            }
-            System.out.println(resultString);
-        }
-        try {
-            Thread.sleep(pause);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
